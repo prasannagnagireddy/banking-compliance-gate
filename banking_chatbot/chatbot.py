@@ -147,7 +147,7 @@ def run_with_guardrails(
     if not allowed:
         write_audit_log_entry(
             session_id=session_id,
-            query=user_message,
+            query=pre_response_pii_filter(user_message),
             response="",
             is_financial=is_financial,
             error=error,
@@ -164,7 +164,7 @@ def run_with_guardrails(
         # Guardrail 3: Audit logging
         write_audit_log_entry(
             session_id=session_id,
-            query=user_message,
+            query=pre_response_pii_filter(user_message),
             response=filtered_response,
             is_financial=is_financial,
             tool_calls=[tool.get("name", "unknown") for tool in (tools or [])],
@@ -176,10 +176,10 @@ def run_with_guardrails(
         error_msg = "An error occurred processing your request"
         write_audit_log_entry(
             session_id=session_id,
-            query=user_message,
+            query=pre_response_pii_filter(user_message),
             response="",
             is_financial=is_financial,
-            error=str(e),
+            error=type(e).__name__,
         )
         return error_msg
 
